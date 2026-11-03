@@ -1,0 +1,14 @@
+# LaTeX build artefacts. The delivered PDF, foliar_fem_lxai_cameraready.pdf,
+# IS versioned.
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+paper.pdf
+pg-*.png
+# the .sty files are copied from sty/ at build time
+/environ.sty
+/trimspaces.sty
+/neurips_2025.sty
+__pycache__/

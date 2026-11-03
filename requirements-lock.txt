@@ -1,0 +1,15 @@
+# Versiones EXACTAS con las que se produjeron las cifras de la documentacion.
+# Python 3.10.11.
+#
+#   python3 -m venv .venv && source .venv/bin/activate
+#   pip install -r requirements-lock.txt
+#   python validate.py        # 66 chequeos, deben terminar en verde
+numpy==2.2.6
+scipy==1.15.3
+scikit-image==0.25.2
+scikit-fmm==2025.06.23
+shapely==2.1.2
+triangle==20250106
+matplotlib==3.10.9
+pandas==2.3.3
+pillow==12.2.0

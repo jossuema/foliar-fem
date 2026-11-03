@@ -1,0 +1,121 @@
+[1mNumerical validation[0m
+
+[1m1 · FEM operators against exact solutions[0m
+  [[92mOK[0m] grad(x) = (1,0,0) on every triangle   max err 1.25e-14
+  [[92mOK[0m] area of the unit square = 1   1.000000000000000
+  [[92mOK[0m] S @ 1 = 0 (constant function has no energy)   max 1.78e-15
+  [[92mOK[0m] mass matrix sums to the area   1.000000000000000
+  [[92mOK[0m] lumped mass preserves the area   
+  [[92mOK[0m] Dirichlet energy of u=x over [0,1]^2 = 1   1.000000000000
+  [[92mOK[0m] perimeter of the unit square = 4   4.000000000000
+
+  geodesic distance on the square (exact: phi = x)
+  [[92mOK[0m]     dijkstra   mean error < 6 % of the side   mean 0.02211  max 0.05625  phi_max 1.05553
+  [[92mOK[0m]     dijkstra2  mean error < 1 % of the side   mean 0.00350  max 0.00967  phi_max 1.00881
+  [[92mOK[0m]     heat       mean error < 2 % of the side   mean 0.00464  max 0.01164  phi_max 1.00026
+
+  generating the reference leaf ...
+
+[1m2 · Area: exact identity in the plane, convergence once lifted[0m
+      edge   triangles      flat area      lifted area      change
+      2.00       20917    11120.59375      12459.86941            
+      1.00       45406    11120.59375      12460.32616    +0.45675
+      0.50      155137    11120.59375      12460.44208    +0.11592
+  [[92mOK[0m] the flat mesh area is EXACTLY the polygon area   11120.593750 against 11120.593750
+  [[92mOK[0m] and it is invariant under refinement (identity, not convergence)   spread 0.000e+00 cm2
+  [[92mOK[0m] the LIFTED area converges under refinement (the change shrinks)   change 0.4568 -> 0.1159 cm2 (factor 3.9)
+  [[92mOK[0m] and the last relative change is below 0.002 %   0.00093 %
+  the residual against the intrinsic truth (-0.0104 %) is the contour
+  digitisation error, which does NOT drop by refining the mesh
+
+[1m3 · Geodesics against the reference eikonal field[0m
+  reference (eikonal on a fine intrinsic grid): 18.967 cm
+        method      lesion mean     err %   RMSE cm   max cm
+      dijkstra           19.625     +3.47     0.721    37.92
+     dijkstra2           19.009     +0.22     0.084    36.73
+          heat           19.331     +1.92     0.610    35.68
+  [[92mOK[0m] default method (dijkstra2) within 0.6 % and RMSE < 0.15 cm   err 0.22 %, RMSE 0.084 cm
+  [[92mOK[0m] and it beats the heat method even with heat at its measured optimum   0.084 against 0.610 cm (factor 7.2)
+
+[1m4 · Contour simplification tolerance[0m
+   simplify_px   triangles  min ang   -S cap   area err  perimeter err   severity err
+          1.20      600691     0.00      YES    -0.258%        -0.542%        -7.461%
+          0.60       19590     2.72      YES    -0.008%        +2.121%        -1.928%
+          0.30       20917    28.03       no    -0.015%        +4.547%        -1.698%
+          0.15       20961    28.02       no    -0.015%        +4.758%        -1.698%
+  The 1.20 px row is not a geometric explosion from slivers: it is the
+  Steiner cap firing and returning a degenerate mesh. The 'min ang'
+  column gives it away.
+  [[92mOK[0m] the area is insensitive to the tolerance (< 0.5 %)   worst 0.258 %
+  [[92mOK[0m] the perimeter is NOT: it is the parameter that sets the tolerance   range 4.76 %
+  [[92mOK[0m] the level C perimeter carries the binary contour bias, +4.5 % +- 1   +4.547 %
+  That +4.5 % is the bias of marching squares on a binary mask in
+  mask_to_polygon. Measured, a Gaussian smoothing of the blade before
+  extracting the contour brings it down to -1.0 %, but it introduces a
+  sigma that drifts with resolution: documented and NOT enabled by default.
+
+[1m5 · Infection PDE: exact identities[0m
+  [[92mOK[0m] K_D with D = c*P reduces to c*S entry by entry   max 1.78e-15
+  [[92mOK[0m] K_D @ 1 = 0 for arbitrary anisotropic D   max 7.77e-16
+  [[92mOK[0m] K_D symmetric   max 0.00e+00
+  [[92mOK[0m] energy of u=x with the tensor = D_v * area   72.000000 against 72.000000
+  [[92mOK[0m] no positive off-diagonals on the structured grid   0 entries
+  [[92mOK[0m] preserves [0,1] across 25 time scales (lumped mass)   min 0.00e+00
+  [[92mOK[0m] second moment <x^2> = 2 ell_v^2   2.00000 against 2.00000
+  [[92mOK[0m] second moment <y^2> = 2 ell_u^2   0.32000 against 0.32000
+  [[92mOK[0m] the tensor ratio is recovered from the moments   6.2500 against 6.2500
+  [[92mOK[0m] composition of N steps = one step of N*dt   max 1.67e-15
+  [[92mOK[0m] 0 <= I <= 1 and monotone   [0.076, 0.998]
+
+[1m6 · Infection PDE on the leaf[0m
+  [[92mOK[0m] vein frame against the cylinder: mean error < 1.5 degrees   0.367 degrees  (max 3.36)
+  [[92mOK[0m] zero triangles with a flipped frame   0
+  [[92mOK[0m] e_v tangent to the triangle (|e_v . N| = 0)   max 1.67e-16
+  [[92mOK[0m] Phi = 1 when I = 1 (preservation of constants)   max 3.33e-15
+  [[92mOK[0m] conservation 1'M Phi = 1'M I (zero flux on the whole boundary)   1.000000000000000
+  [[92mOK[0m] the initial condition introduces no area bias   1.2370 % against 1.2370 %
+  [[92mOK[0m] 0 <= I <= 1 after 84 steps on the real mesh, NO clipping   [0.000e+00, 1.000000000]
+  [[92mOK[0m] the Phi undershoot stays negligible   min/max = -2.13e-03  (16456 of 63862 positive off-diag)
+  [[92mOK[0m] the predictor-corrector converges at order 2 in dt   observed order 1.96
+    gamma  beta0 calib   Psi model   excess pp
+     -1.0      0.01448      0.6727      -10.64
+     +0.0      0.04392      0.7644       +1.70
+     +1.0      0.09654      0.8839      +17.79
+  [[92mOK[0m] the excess is monotonically increasing in gamma   -10.64 < +1.70 < +17.79 pp
+  [[92mOK[0m] and it separates the hypotheses by more than 10 pp   28.4 pp
+
+[1m7 · Latency: the closed-form kernel[0m
+  tau_E = 38 d, k = 3, kappa = 0.07895/d, delay sd = 21.9 d, source weights [0.    0.579 1.   ]
+  [[92mOK[0m] exp(A dt)^2 = exp(A 2dt) over 1015 combinations of (rho, dt)   max 3.33e-16
+  [[92mOK[0m] at the confluence rho = kappa the kernel gives the exact closed form   max 2.78e-17
+  [[92mOK[0m] the implemented delay is exactly Erlang(k, k/tau_E)   max 1.55e-15
+
+[1m8 · Latency on the leaf[0m
+  [[92mOK[0m] the initial latent pool is (1 + r/kappa)^k - 1 times the visible one   1.889954 against 1.889954
+  [[92mOK[0m] and the target mass is placed in full   relative deficit -1.95e-16, 747 saturated nodes
+  [[92mOK[0m] S + sum E + I = 1 after 84 steps (stochastic transition matrix)   max deviation 1.11e-16
+  [[92mOK[0m] no negative compartment, without clipping   min E 0.00e+00, min I -1.43e-15
+  [[92mOK[0m] I remains monotone (dI/dt = kappa E_k >= 0)   max I 1.000000000000
+  [[92mOK[0m] transport conservation with the latent source Q = I + sum w_j E_j   1.000000000000000
+  [[92mOK[0m] tau_E -> 0 converges to the latency-free scheme, at order 1   error 2.37e-04 -> 2.37e-05, ratio 0.100
+  [[92mOK[0m] the predictor-corrector with latency is still order 2   observed order 1.96
+  calibrated beta_0: 0.09654 without latency against 0.14071 with latency (x1.46)
+  [[92mOK[0m] beta_0 with latency is LARGER, not smaller (it is an infection rate, not a necrosis rate)   x1.46
+  with beta_0 = 0 draining the latent pool already explains 82.4 % of the observed increment
+  [[92mOK[0m] and that is why at 21 days beta_0 is BADLY identified (the pool explains >50 %)   82.4 % of the increment does not come from new infection
+
+[1m9 · The ground truth perimeter estimator[0m
+  [[92mOK[0m] circle r=1: perimeter = 2*pi to within 0.01 %   0.00010 %
+  [[92mOK[0m] ellipse 1.3x0.7: perimeter = 4a*E(e^2) to within 0.01 %   0.00014 %
+  [[92mOK[0m] rotated square: the zero level gives 6.4 at every angle (< 0.15 %)   worst 0.057 %
+  [[92mOK[0m] the binary estimator is NOT invariant under orientation   spread 8.06 % against 0.039 % for the zero level
+  [[92mOK[0m] {phi > 0} matches in_blade without a single discrepancy   0 discrepancies over 3.3e6 points
+  [[92mOK[0m] tear-free leaf: matches the arc-length quadrature (< 0.05 %)   +0.00177 %  (494.546 against 494.537 cm)
+  [[92mOK[0m] zero level: halving h moves the perimeter by less than 0.15 %   +0.0766 %  (743.12 -> 743.69 cm)
+  [[92mOK[0m] successive differences are divided by ~2: the order is 1, not 0   ratio 0.623 -> order 0.68
+  [[92mOK[0m] the binary one converges to a value > 3 % longer (bias, not noise)   +4.70 %  (778.67 against 743.69 cm)
+  [[92mOK[0m] seed 7: intrinsic perimeter = 744.25 +- 0.75 cm   744.225 cm
+  [[92mOK[0m] seed 7: projected perimeter = 687.00 +- 0.70 cm   686.982 cm
+  [[92mOK[0m] the projected perimeter is shorter than the intrinsic one   686.98 < 744.23 cm
+
+[92mAll checks green.[0m

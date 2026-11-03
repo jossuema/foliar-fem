@@ -1,0 +1,17 @@
+# Dependencias con cota superior de version mayor.
+#
+# El proyecto es determinista dentro de un entorno dado: dos corridas con las
+# mismas versiones dan salida identica bit a bit. Pero las cifras de referencia
+# SI se mueven entre versiones de las librerias geometricas -- un conjunto
+# distinto daba 20 989 triangulos en vez de 20 917, y con la malla cambia todo
+# lo que se mide sobre ella.
+#
+# Para reproducir las cifras publicadas usa requirements-lock.txt.
+numpy>=1.24,<3
+scipy>=1.10,<2
+scikit-image>=0.20,<0.26
+scikit-fmm>=2023.4
+shapely>=2.0,<3
+triangle>=20220202
+matplotlib>=3.7,<4
+pandas>=2.0,<3

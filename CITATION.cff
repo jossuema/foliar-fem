@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+title: >-
+  foliar-fem: geometría continua y difusión anisótropa sobre la lámina foliar
+message: Si usás este software o sus resultados, citalo así.
+type: software
+authors:
+  - family-names: Marcillo
+    given-names: Jossue
+repository-code: "https://github.com/jossuema/foliar-fem"
+abstract: >-
+  Pipeline que va de máscaras de segmentación bidimensionales de una hoja de
+  banano con sigatoka negra a parámetros agronómicos, pasando por triangulación
+  de Delaunay restringida y operadores de elementos finitos P1. Sobre esa
+  infraestructura resuelve una ecuación de reacción-difusión anisótropa que
+  modela la expansión de la lesión, con un compartimento de latencia que ancla
+  el eje temporal a la biología publicada de Pseudocercospora fijiensis.
+keywords:
+  - fitopatología
+  - sigatoka negra
+  - Pseudocercospora fijiensis
+  - elementos finitos
+  - distancias geodésicas
+  - reacción-difusión
+  - agricultura de precisión
+license: MIT
+version: 0.2.0

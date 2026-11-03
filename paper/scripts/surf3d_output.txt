@@ -1,0 +1,189 @@
+# Salida de referencia de surf3d.py
+#
+# Secciones 1-4 y 7: `python3 surf3d.py full`  (n <= 1600, ~25 min)
+# Seccion 5 (esfericidad IBSI): surf3d.radiomics((200,400,800))
+# Seccion 6 (invariante integral): surf3d.convergent_on_mask((100,200,400))
+#
+# Entorno: numpy 2.2.6, scipy 1.15.3, scikit-image 0.25.2.
+# Las cifras de MC-bin dependen de como el mallador resuelve las celdas
+# ambiguas (skimage usa Lewiner); un mallador de MC distinto puede mover la
+# meseta unas decimas de punto.
+==========================================================================
+SELFTEST
+==========================================================================
+(a) elipsoide 1.3x1.0x0.7
+    Legendre (F,E incompletas) : 12.4245489060
+    cuadratura Gauss-Legendre  : 12.4245489060
+    diferencia relativa        : 2.032e-14   OK
+(b) Legendre contra cuadratura en otras formas, y limite esferico
+    (2.0, 1.0, 0.5)        Legendre 15.8691621631  quad 15.8691621631  rel 2.12e-14
+    (1.0, 1.0, 0.5)        Legendre 8.6718827033  quad 8.6718827033  rel 1.89e-14
+    (1.0, 0.6, 0.6)        Legendre 6.6317224775  quad 6.6317224775  rel 2.16e-14
+    (1.0, 1.0, 0.999999999) Legendre 12.5663706060  quad 12.5663706060  rel 1.88e-14
+    limite esferico contra 4pi : 12.5663706060 vs 12.5663706144  (6.67e-10)
+(c) suma por bloques == volumen entero (esfera, n=120)
+    mcbin  entero 13.6754271599  bloques 13.6754271599  dif 2.22e-16  (tol 1e-12) OK
+    mc0    entero 12.5635260578  bloques 12.5635260524  dif 4.33e-10  (tol 1e-08) OK
+(d) Crofton/caras por bloques == de una pasada (esfera, n=120)
+    crofton  entero 12.56686468  bloques 12.56686468  dif 0.00e+00  OK
+    faces    entero 18.84721136  bloques 18.84721136  dif 0.00e+00  OK
+(e) semiespacio de normal (0,0,1): f tiene que ser 1 exacto
+    f = 1.000000  (sd 0.0e+00)  OK
+(f) semiespacio de normal (1,1,0)/sqrt2 -> el analogo 2D a 45 deg
+    f = 1.000000  (2D a 45 deg predice 1.000000)
+(g) cubo alineado con los ejes, area exacta 15.36
+    caras     15.514760  (+1.0076 %)  <- solo cuantizacion del lado
+    MC-bin    15.423682  (+0.4146 %)
+    MC-0      15.314737  (-0.2947 %)
+    Crofton13 14.293602  (-6.9427 %)
+
+======================================================================================
+esfera r=1   area exacta = 12.56637061
+======================================================================================
+     n         h       MC-bin     err %         MC-0     err %    Crofton13     err %        caras     err %
+    50  0.065306     13.58499   +8.1059     12.54959   -0.1335     12.49540   -0.5648     18.73140  +49.0597    (0s)
+   100  0.032323     13.69745   +9.0009     12.56226   -0.0327     12.57789   +0.0916     18.85639  +50.0544    (0s)
+   200  0.016080     13.65760   +8.6838     12.56535   -0.0081     12.55653   -0.0783     18.82871  +49.8341    (0s)
+   400  0.008020     13.67487   +8.8211     12.56612   -0.0020     12.57034   +0.0316     18.85486  +50.0422    (1s)
+   800  0.004005     13.67141   +8.7936     12.56631   -0.0005     12.56653   +0.0013     18.84965  +50.0008    (11s)
+  1600  0.002001     13.67162   +8.7953     12.56635   -0.0001     12.56590   -0.0038     18.84944  +49.9991    (98s)
+
+  orden observado  log2(|err_n| / |err_2n|):
+       n->2n     MC-bin       MC-0  Crofton13      caras
+     50->100      -0.15       2.03       2.62      -0.03
+    100->200       0.05       2.01       0.23       0.01
+    200->400      -0.02       2.01       1.31      -0.01
+    400->800       0.00       2.00       4.61       0.00
+   800->1600      -0.00       2.00      -1.53       0.00
+
+======================================================================================
+elipsoide 1.3x1.0x0.7   area exacta = 12.42454891
+======================================================================================
+     n         h       MC-bin     err %         MC-0     err %    Crofton13     err %        caras     err %
+    50  0.065306     13.44928   +8.2476     12.40497   -0.1576     12.36402   -0.4872     18.21961  +46.6420    (0s)
+   100  0.032323     13.51809   +8.8015     12.41976   -0.0386     12.41451   -0.0808     18.30474  +47.3272    (0s)
+   200  0.016080     13.52005   +8.8173     12.42336   -0.0096     12.41970   -0.0390     18.27018  +47.0490    (0s)
+   400  0.008020     13.52533   +8.8597     12.42425   -0.0024     12.42664   +0.0168     18.28317  +47.1536    (2s)
+   800  0.004005     13.52693   +8.8726     12.42448   -0.0006     12.42705   +0.0201     18.28530  +47.1707    (10s)
+  1600  0.002001     13.52686   +8.8720     12.42453   -0.0001     12.42674   +0.0176     18.28470  +47.1659    (87s)
+
+  orden observado  log2(|err_n| / |err_2n|):
+       n->2n     MC-bin       MC-0  Crofton13      caras
+     50->100      -0.09       2.03       2.59      -0.02
+    100->200      -0.00       2.01       1.05       0.01
+    200->400      -0.01       2.01       1.21      -0.00
+    400->800      -0.00       2.00      -0.26      -0.00
+   800->1600       0.00       2.00       0.19       0.00
+
+======================================================================================
+DISPERSION POR ORIENTACION   n = 400
+   definicion: max(err) - min(err) en pp, angulos 0..45 paso 5
+======================================================================================
+cubo lado 1.6, giro sobre z   (exacta 15.360000)
+   MC-bin     +0.207 +2.065 +3.413 +4.774 +5.456 +5.197 +4.746 +3.826 +1.943 +0.275
+   MC-0       -0.147 -0.304 -0.305 -0.287 -0.222 -0.299 -0.209 -0.190 -0.242 -0.270
+   Crofton13  -7.141 -5.374 -4.081 -2.775 -2.097 -2.298 -2.674 -3.487 -5.198 -6.709
+   dispersion (pp):  MC-bin 5.2492   MC-0 0.1579   Crofton13 5.0435
+   factor MC-bin / MC-0 : 33
+   prediccion desde el 2D, (2/3)*(f2(t)-1) + err(0):
+   pred       +0.207 +2.360 +3.990 +5.083 +5.631 +5.631 +5.083 +3.990 +2.360 +0.207
+   dispersion predicha 5.4241 pp contra 5.2492 medida
+cubo lado 1.6, giro sobre (1,1,1)   (exacta 15.360000)
+   MC-bin     +0.207 +3.131 +6.056 +8.441 +10.281 +11.581 +12.343 +12.439 +12.016 +10.991
+   MC-0       -0.147 -0.332 -0.350 -0.336 -0.322 -0.307 -0.263 -0.270 -0.255 -0.242
+   Crofton13  -7.141 -4.935 -2.696 -0.916 +0.401 +1.252 +1.652 +1.494 +0.898 -0.011
+   dispersion (pp):  MC-bin 12.2314   MC-0 0.2032   Crofton13 8.7927
+   factor MC-bin / MC-0 : 60
+elipsoide 1.3x1.0x0.7, giro sobre z   (exacta 12.424549)
+   MC-bin     +8.860 +8.861 +8.875 +8.870 +8.853 +8.869 +8.847 +8.864 +8.853 +8.853
+   MC-0       -0.002 -0.002 -0.002 -0.002 -0.002 -0.002 -0.002 -0.002 -0.002 -0.002
+   Crofton13  +0.017 +0.011 +0.026 +0.013 +0.012 +0.017 +0.004 +0.022 +0.012 +0.017
+   dispersion (pp):  MC-bin 0.0284   MC-0 0.0000   Crofton13 0.0221
+   factor MC-bin / MC-0 : 2947
+elipsoide 1.3x1.0x0.7, giro sobre (1,1,1)   (exacta 12.424549)
+   MC-bin     +8.860 +8.873 +8.878 +8.856 +8.884 +8.868 +8.854 +8.836 +8.809 +8.767
+   MC-0       -0.002 -0.002 -0.002 -0.002 -0.002 -0.002 -0.002 -0.002 -0.002 -0.002
+   Crofton13  +0.017 +0.022 +0.024 +0.006 +0.036 +0.027 +0.028 +0.025 +0.013 -0.008
+   dispersion (pp):  MC-bin 0.1175   MC-0 0.0000   Crofton13 0.0434
+   factor MC-bin / MC-0 : 3496
+
+==============================================================================
+LA MESETA DE MC-bin EN LA ESFERA (no es convergencia lenta)
+==============================================================================
+  n =   400   +8.82113 %
+  n =   500   +8.82749 %
+  n =   600   +8.79520 %
+  n =   700   +8.77251 %
+  n =   800   +8.79362 %
+  n =   900   +8.81481 %
+  n =  1000   +8.80708 %
+  n =  1100   +8.79102 %
+  n =  1200   +8.80139 %
+  meseta = 8.80269 pp   sd 0.01699   se 0.00566   (sin tendencia en n)
+
+==============================================================================
+f(u) DEL SEMIESPACIO DIGITAL Y EL ANALOGO 3D DE LA CTE DE KULPA
+==============================================================================
+f(u) = area MC-binaria / area verdadera de un semiespacio de
+normal u. En 2D el analogo es f2(t) = cos t + (sqrt2 - 1) sin t.
+
+  eje        (0,0,1)           f = 1.00000   (sd entre fases 0.0e+00)
+  cara-diag  (1,0,1)/sqrt2     f = 1.00000   (sd entre fases 0.0e+00)
+  cubo-diag  (1,1,1)/sqrt3     f = 1.00000   (sd entre fases 0.0e+00)
+             (1,1,2)/sqrt6     f = 1.11535   (sd entre fases 0.0e+00)
+             (1,1,3)/sqrt11    f = 1.12527   (sd entre fases 7.4e-05)
+             (1,2,3)/sqrt14    f = 1.10813   (sd entre fases 8.6e-06)
+             (2,3,5)/sqrt38    f = 1.11581   (sd entre fases 0.0e+00)
+  Las TRES direcciones de simetria dan f = 1 exacto; el sesgo
+  aparece entre ellas. Es la estructura de f2 en 2D, que vale 1
+  en 0 y en 45 grados y sube a 1.0824 en 22.5.
+
+  media sobre 32000 direcciones uniformes en S^2 (L = 40):
+     fbar_3D = 1.088272 +- 0.000157    [min 0.9932, max 1.1312]
+     -> sesgo asintotico predicho para la ESFERA: +8.8272 +- 0.0157 pp
+
+  en 2D:  fbar_2D = (4/pi)(2 sqrt2 - 2) = 1.054786  (+5.4786 %)
+  NO se conoce forma cerrada para fbar_3D; el valor de arriba es
+  medido, no derivado.
+  (40 s)
+
+  PREDICCION para el elipsoide 1.3x1.0x0.7 (normales NO uniformes)
+     fbar sobre sus normales = 1.088325 +- 0.000158 -> +8.8325 +- 0.0158 pp
+     control analitico del metodo: para el conteo de CARAS f es
+     exactamente |ux|+|uy|+|uz|, cuya media sobre las normales del
+     elipsoide vale 1.471636 -> +47.1636 % (esfera: 3/2 -> +50 % exacto)
+
+==============================================================================
+DESCRIPTORES DE FORMA DE IBSI / PyRadiomics
+==============================================================================
+esfera r=1   A = 12.566371  V = 4.188790  esfericidad exacta = 1.000000
+       n      V voxel      err % esfer MC-bin      err %   esfer MC-0      err %
+     200     4.189927    +0.0271     0.920267    -7.9733     1.000262    +0.0262
+     400     4.189120    +0.0079     0.918987    -8.1013     1.000073    +0.0073
+     800     4.188870    +0.0019     0.919183    -8.0817     1.000018    +0.0018
+
+elipsoide 1.3x1.0x0.7   A = 12.424549  V = 3.811799  esfericidad exacta = 0.949781
+       n      V voxel      err % esfer MC-bin      err %   esfer MC-0      err %
+     200     3.811111    -0.0180     0.872717    -8.1139     0.949758    -0.0025
+     400     3.811754    -0.0012     0.872475    -8.1394     0.949796    +0.0016
+     800     3.811834    +0.0009     0.872384    -8.1489     0.949792    +0.0012
+
+
+==============================================================================
+UN ESTIMADOR CONVERGENTE QUE SI CORRE SOBRE LA MASCARA BINARIA
+   invariante integral, r = 0.25 h^(1/3)
+==============================================================================
+  esfera r=1   exacta 12.566371
+    n =  100      12.447012    -0.9498 %   (0s)
+    n =  200      12.484637    -0.6504 %  orden 0.55   (0s)
+    n =  400      12.529429    -0.2940 %  orden 1.15   (4s)
+
+  elipsoide 1.3x1.0x0.7   exacta 12.424549
+    n =  100      12.266428    -1.2726 %   (0s)
+    n =  200      12.337420    -0.7013 %  orden 0.86   (0s)
+    n =  400      12.386337    -0.3076 %  orden 1.19   (4s)
+
+  cubo lado 1.6, giro sobre z, n = 200:
+    -0.795 -1.130 -1.273 -1.663 -1.254 -1.394 -1.528 -1.874 -1.153 -1.385
+    dispersion 1.0784 pp  (MC-bin da 5.25 pp a n=400)
+

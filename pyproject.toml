@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "foliar-fem"
+version = "0.2.0"
+description = "De mascaras de segmentacion 2D a parametros agronomicos y simulacion del frente de infeccion, via triangulacion de Delaunay restringida y elementos finitos P1"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Jossue Marcillo" }]
+keywords = ["fitopatologia", "sigatoka", "banano", "elementos-finitos",
+            "geodesicas", "mallado", "reaccion-difusion", "agricultura-de-precision"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Scientific/Engineering :: Image Processing",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Natural Language :: Spanish",
+]
+dependencies = [
+  "numpy>=1.24,<3",
+  "scipy>=1.10,<2",
+  "scikit-image>=0.20,<0.26",
+  "scikit-fmm>=2023.4",
+  "shapely>=2.0,<3",
+  "triangle>=20220202",
+  "matplotlib>=3.7,<4",
+  "pandas>=2.0,<3",
+]
+
+[project.urls]
+Repository = "https://github.com/jossuema/foliar-fem"
+
+[tool.setuptools]
+packages = ["foliar"]

@@ -1,0 +1,34 @@
+# PyRadiomics 3.0.1 sobre las mismas mascaras que surf3d.py
+# Cierra el hueco: la ruta de PyRadiomics ya no se MODELA con skimage, se MIDE.
+# Generado con scratchpad/venv_prad (pyradiomics 3.0.1, numpy 1.26.4, SimpleITK 2.5.6)
+# 2026-08-19T21:41:32Z
+
+============================================================================================
+SPHERE   area exacta 12.5663706   volumen exacto 4.1887902   esfericidad exacta 1.0000000
+============================================================================================
+     n         h |  SurfaceArea     err % |   MeshVolume    err % |  VoxelVolume    err % |  Sphericity    err %
+--------------------------------------------------------------------------------------------
+   100  0.032323 |    13.697451   +9.0009 |     4.194599  +0.1387 |     4.196794  +0.1911 |    0.918272  -8.1728
+   200  0.016080 |    13.657603   +8.6838 |     4.189391  +0.0143 |     4.189927  +0.0271 |    0.920189  -7.9811
+   400  0.008020 |    13.674867   +8.8211 |     4.188987  +0.0047 |     4.189120  +0.0079 |    0.918968  -8.1032
+
+============================================================================================
+ELLIPSOID   area exacta 12.4245489   volumen exacto 3.8117991   esfericidad exacta 0.9497810
+============================================================================================
+     n         h |  SurfaceArea     err % |   MeshVolume    err % |  VoxelVolume    err % |  Sphericity    err %
+--------------------------------------------------------------------------------------------
+   100  0.032323 |    13.518095   +8.8015 |     3.809080  -0.0713 |     3.811264  -0.0140 |    0.872533  -8.1332
+   200  0.016080 |    13.520053   +8.8173 |     3.810568  -0.0323 |     3.811111  -0.0180 |    0.872634  -8.1226
+   400  0.008020 |    13.525329   +8.8597 |     3.811621  -0.0047 |     3.811754  -0.0012 |    0.872454  -8.1415
+
+============================================================================================
+CONTRASTE CON LA INFERENCIA POR skimage QUE EL PAPER TRAIA
+============================================================================================
+  surf3d.py modelaba la ruta de PyRadiomics con skimage.measure.marching_cubes
+  sobre la indicadora binaria al nivel 0.5, y reportaba:
+    esfera     +8.82 % (n=400)   esfericidad 0.918987  (-8.10 %)
+    elipsoide  +8.86 % (n=400)   esfericidad 0.872475  (-8.14 %)
+  Las filas de arriba son PyRadiomics de verdad. Si coinciden, la
+  inferencia era correcta y el paper puede citar PyRadiomics por su nombre.
+
+  pyradiomics v3.0.1   numpy 1.26.4   SimpleITK 2.5.6

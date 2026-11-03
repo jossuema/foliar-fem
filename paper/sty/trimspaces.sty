@@ -1,0 +1,10 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{trimspaces}[2026/08/07 minimo para environ]
+\begingroup
+\catcode`\Q=3
+\gdef\trim@spaces#1{%
+  \romannumeral-`\q\trim@trim@\noexpand#1Q Q}
+\gdef\trim@trim@#1 Q{\trim@trim@@#1Q}
+\gdef\trim@trim@@#1Q#2{#1}
+\endgroup
+\endinput

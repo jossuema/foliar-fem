@@ -1,0 +1,48 @@
+# --- salidas generadas -------------------------------------------------
+# Todo out/ se regenera con: python3 demo.py && python3 demo_infeccion.py
+# La unica salida versionada es docs/validate_output.txt, que es la linea
+# base de regresion.
+out/
+
+# --- entornos y build --------------------------------------------------
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# --- notebooks ---------------------------------------------------------
+.ipynb_checkpoints/
+
+# --- modelos y datos (no versionar pesos ni el dataset) ----------------
+*.pt
+*.pth
+*.onnx
+runs/
+datasets/
+Black-sigatoka-*/
+
+# --- credenciales ------------------------------------------------------
+.env
+*.key
+secrets.*
+
+# --- sistema y ofimatica ----------------------------------------------
+.DS_Store
+Thumbs.db
+~$*
+*.tmp
+
+# --- LaTeX intermedio --------------------------------------------------
+*.aux
+*.log
+*.out
+*.toc
+
+# --- configuracion local del editor/agente ---------------------------
+.claude/
+.vscode/
+.idea/
