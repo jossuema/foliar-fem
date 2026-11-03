@@ -4,8 +4,12 @@ title: >-
 message: If you use this software or its results, please cite it as below.
 type: software
 authors:
-  - family-names: Marcillo
-    given-names: Jossue
+  - family-names: Malla Campoverde
+    given-names: Manuel Josue
+    affiliation: Universidad Tecnica de Machala, Machala, Ecuador
+  - family-names: Tusa
+    given-names: Eduardo
+    affiliation: Universidad Tecnica de Machala, Machala, Ecuador
 repository-code: "https://github.com/jossuema/foliar-fem"
 abstract: >-
   A pipeline that goes from 2D segmentation masks of a banana leaf with black

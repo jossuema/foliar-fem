@@ -9,7 +9,8 @@ description = "From 2D segmentation masks to agronomic parameters and infection-
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
-authors = [{ name = "Jossue Marcillo" }]
+authors = [{ name = "Manuel Josue Malla Campoverde" },
+           { name = "Eduardo Tusa" }]
 keywords = ["plant-pathology", "black-sigatoka", "banana", "finite-elements",
             "geodesic-distances", "meshing", "reaction-diffusion",
             "precision-agriculture"]
