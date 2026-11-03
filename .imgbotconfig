@@ -1,0 +1,7 @@
+{
+    "ignoredFiles": [
+        "paper/fig/*",
+        "docs/img/*"
+    ],
+    "minKBReduced": 1000
+}
