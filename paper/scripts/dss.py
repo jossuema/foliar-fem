@@ -63,7 +63,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 _ROOT = os.path.normpath(os.path.join(_HERE, os.pardir, os.pardir))
 
 # --------------------------------------------------------------------------
-# 1 · Contorno interpixel (crack boundary)
+# 1 · Interpixel contour (crack boundary)
 # --------------------------------------------------------------------------
 # Coordinate convention: pixel (row i, column j) occupies the square
 # [j, j+1] x [i, i+1]. A vertex is an integer CORNER pair (x, y) = (column,
@@ -94,10 +94,10 @@ def crack_contours(mask: np.ndarray) -> list[list[tuple[int, int]]]:
 
     # (mask of exposed sides, directed edge in corner offsets)
     sides = (
-        (core & ~m[0:-2, 1:-1], (0, 0, 1, 0)),   # arriba : (j,i)     -> (j+1,i)
-        (core & ~m[1:-1, 2:],   (1, 0, 1, 1)),   # derecha: (j+1,i)   -> (j+1,i+1)
-        (core & ~m[2:, 1:-1],   (1, 1, 0, 1)),   # abajo  : (j+1,i+1) -> (j,i+1)
-        (core & ~m[1:-1, 0:-2], (0, 1, 0, 0)),   # izq.   : (j,i+1)   -> (j,i)
+        (core & ~m[0:-2, 1:-1], (0, 0, 1, 0)),   # top    : (j,i)     -> (j+1,i)
+        (core & ~m[1:-1, 2:],   (1, 0, 1, 1)),   # right  : (j+1,i)   -> (j+1,i+1)
+        (core & ~m[2:, 1:-1],   (1, 1, 0, 1)),   # bottom : (j+1,i+1) -> (j,i+1)
+        (core & ~m[1:-1, 0:-2], (0, 1, 0, 0)),   # left   : (j,i+1)   -> (j,i)
     )
 
     succ: dict[tuple[int, int], list[tuple[int, int]]] = {}
@@ -156,26 +156,26 @@ class _Oct1DSS:
     def push(self, x: int, y: int) -> bool:
         a, b, mu = self.a, self.b, self.mu
         r = a * x - b * y
-        if mu <= r <= mu + b - 1:                      # queda dentro de la banda
+        if mu <= r <= mu + b - 1:                      # stays inside the band
             if r == mu:
                 self.ulx, self.uly = x, y
             if r == mu + b - 1:
                 self.llx, self.lly = x, y
             return True
-        if r == mu - 1:                                # se sale por arriba
+        if r == mu - 1:                                # leaves through the top
             a2 = y - self.ufy
             b2 = x - self.ufx
             self.a, self.b = a2, b2
             self.mu = a2 * x - b2 * y
-            self.lfx, self.lfy = self.llx, self.lly    # L_f' = L_l' = L_l viejo
+            self.lfx, self.lfy = self.llx, self.lly    # L_f' = L_l' = old L_l
             self.ulx, self.uly = x, y
             return True
-        if r == mu + b:                                # se sale por abajo
+        if r == mu + b:                                # leaves through the bottom
             a2 = y - self.lfy
             b2 = x - self.lfx
             self.a, self.b = a2, b2
             self.mu = a2 * x - b2 * y - b2 + 1
-            self.ufx, self.ufy = self.ulx, self.uly    # U_f' = U_l' = U_l viejo
+            self.ufx, self.ufy = self.ulx, self.uly    # U_f' = U_l' = old U_l
             self.llx, self.lly = x, y
             return True
         return False
@@ -238,11 +238,11 @@ def _extend(path, i: int, n: int):
                 break
         j += 1
 
-    if quad is None:                       # tramo recto puro (0 o 1 direccion)
+    if quad is None:                       # pure straight run (0 or 1 direction)
         if d1 is None:
             return j, 0, 0, 0
         dx, dy = d1
-        alpha, beta = dy, -dx              # forma lineal nula sobre la direccion
+        alpha, beta = dy, -dx              # linear form vanishing along the direction
         mu = alpha * path[i][0] + beta * path[i][1]
         return j, alpha, beta, mu
 
@@ -260,7 +260,7 @@ def greedy_breaks(path) -> list[int]:
     out, i = [0], 0
     while i < n - 1:
         j, *_ = _extend(path, i, n)
-        if j <= i:                                     # no puede pasar; guarda
+        if j <= i:                                     # cannot happen; guard
             j = i + 1
         out.append(j)
         i = j
@@ -333,7 +333,7 @@ def is_naive_dss_bf(pts) -> bool:
     if len(P) <= 2:
         return True
     return (_fits_vertical(P[:, 0], P[:, 1]) or   # |a| <= |b|
-            _fits_vertical(P[:, 1], P[:, 0]))     # |a| >  |b|, por simetria x<->y
+            _fits_vertical(P[:, 1], P[:, 0]))     # |a| >  |b|, by x<->y symmetry
 
 
 def _shear(pts):
@@ -383,7 +383,7 @@ ESTIMATORS = [
 
 
 # --------------------------------------------------------------------------
-# 5 · Formas de prueba
+# 5 · Test shapes
 # --------------------------------------------------------------------------
 HALF = 1.6
 
@@ -433,7 +433,7 @@ def selftest(seed=0):
     print("\n== selftest ==")
     bad = 0
 
-    # (a) identidad de cizalla: recta estandar <-> recta naive
+    # (a) shear identity: standard line <-> naive line
     n_ok = 0
     for _ in range(400):
         a = int(rng.integers(0, 12))
@@ -455,7 +455,7 @@ def selftest(seed=0):
     print(f"  [{'OK ' if ok else 'BAD'}] shear (x+y, y): standard(a,b) == naive(a,a+b)"
           f"   {n_ok}/400")
 
-    # (b) reconocedor naive octante 1 contra fuerza bruta
+    # (b) naive octant-1 recogniser against brute force
     n_tested = n_dis = 0
     for _ in range(600):
         k = int(rng.integers(2, 26))
@@ -478,8 +478,8 @@ def selftest(seed=0):
                 break
     ok = n_dis == 0
     bad += not ok
-    print(f"  [{'OK ' if ok else 'MAL'}] reconocedor naive == fuerza bruta"
-          f"   {n_dis} discrepancias en {n_tested} prefijos")
+    print(f"  [{'OK ' if ok else 'BAD'}] naive recogniser == brute force"
+          f"   {n_dis} disagreements over {n_tested} prefixes")
 
     # (c) primitive gcd and certificate on real curves
     n_seg = n_cert = n_max = 0
@@ -496,7 +496,7 @@ def selftest(seed=0):
             while i < n - 1:
                 j, al, be, mu = _extend(loop, i, n)
                 n_seg += 1
-                # certificado en coordenadas ORIGINALES
+                # certificate in the ORIGINAL coordinates
                 w = abs(al) + abs(be)
                 seg = np.array(loop[i:j + 1], dtype=np.int64)
                 r = al * seg[:, 0] + be * seg[:, 1]
@@ -530,8 +530,8 @@ def selftest(seed=0):
                     n_bad_step += 1
     ok = n_bad_step == 0
     bad += not ok
-    print(f"  [{'OK ' if ok else 'MAL'}] contorno crack cerrado y 4-conectado"
-          f"   {n_loops} curvas, {n_bad_step} pasos invalidos")
+    print(f"  [{'OK ' if ok else 'BAD'}] crack contour closed and 4-connected"
+          f"   {n_loops} curves, {n_bad_step} invalid steps")
 
     # (e) a straight staircase is ONE single DSS: the chord is exact
     #     (the property that separates DSS from marching squares, which would
@@ -604,12 +604,12 @@ def selftest(seed=0):
     print(f"  [{'OK ' if ok else 'BAD'}] marching squares == {K_KULPA:.8f} * Crofton-4"
           f" (saddle-free)   {n_chk - n_dis}/{n_chk} exact, {n_sad} with a saddle skipped")
 
-    print(f"  --> {'TODO EN VERDE' if bad == 0 else str(bad) + ' FALLAS'}")
+    print(f"  --> {'ALL GREEN' if bad == 0 else str(bad) + ' FAILURES'}")
     return bad
 
 
 # --------------------------------------------------------------------------
-# 7 · Banco de convergencia
+# 7 · Convergence bench
 # --------------------------------------------------------------------------
 NS = (200, 400, 800, 1600, 3200)
 ANGLES = tuple(float(a) for a in range(0, 50, 5))
@@ -648,11 +648,11 @@ def bench():
             vals = _measure(msk, h)
             sq[(n, ang)] = {k: v for k, v in vals.items() if v is not None}
             del msk
-        print(f"  ... n = {n} listo ({time.time() - t0:.0f} s)", file=sys.stderr)
+        print(f"  ... n = {n} done ({time.time() - t0:.0f} s)", file=sys.stderr)
 
     # ---- table 1: circle and ellipse
     print("\n### Convergence: relative error (%) against the exact value\n")
-    print("| forma | n | h | " + " | ".join(names) + " |")
+    print("| shape | n | h | " + " | ".join(names) + " |")
     print("|---|---:|---:|" + "---:|" * len(names))
     for tag in ("circle", "ellipse"):
         for n in NS:
@@ -667,7 +667,7 @@ def bench():
     # over rotations from 0 to 45 degrees in steps of 5.
     #
     # The previous version used max(value)/min(value) - 1, which is wrong for
-    # razones independientes:
+    # two independent reasons:
     #
     #   (a) it makes no sense when the errors cross zero -- Crofton runs from
     #       -5.18 % to +2.52 %, which is 7.71 POINTS of travel, not "8.13 %" --;
@@ -697,7 +697,7 @@ def bench():
             v = np.array([sq[(n, a)][k] for a in ANGLES])
             e = 100.0 * (v / P_SQUARE - 1.0)
             worst = float(np.abs(e).max())
-            disp = float(e.max() - e.min())      # puntos porcentuales
+            disp = float(e.max() - e.min())      # percentage points
             disp_tbl[(n, k)] = (worst, disp)
             cells.append(f"{worst:.4f} / {disp:.4f}")
         print(f"| {n} | " + " | ".join(cells) + " |")
@@ -712,9 +712,9 @@ def bench():
         cells = " | ".join(f"{100.0 * (row[k] / P_SQUARE - 1.0):+.4f}" for k in names)
         print(f"| {a:.0f} | {cells} |")
 
-    # ---- orden observado del DSS
+    # ---- observed order of the DSS
     print("\n### Observed DSS order (log2 of the error ratio)\n")
-    print("| forma | " + " | ".join(f"{a}->{b}" for a, b in zip(NS[:-1], NS[1:])) + " |")
+    print("| shape | " + " | ".join(f"{a}->{b}" for a, b in zip(NS[:-1], NS[1:])) + " |")
     print("|---|" + "---:|" * (len(NS) - 1))
     for tag in ("circle", "ellipse"):
         e = [abs(res[(tag, n)]["DSS"]) for n in NS]
@@ -762,7 +762,7 @@ def deep():
     print("\nObserved order (least squares of log|err| against log h):")
     for k in ref:
         p = float(np.polyfit(lh, np.log(np.array(err[k])), 1)[0])
-        print(f"  {k:16s} orden {p:.2f}")
+        print(f"  {k:16s} order {p:.2f}")
 
 
 # --------------------------------------------------------------------------
@@ -791,15 +791,15 @@ def leaf():
         if v is None:
             continue
         print(f"| {name} | {v:.3f} | {100.0 * (v / ref - 1.0):+.3f} |")
-    print(f"\nsegmentos DSS: {dss_nsegments(m)}   "
-          f"vertices del crack: {sum(len(l) - 1 for l in crack_contours(m))}   "
-          f"curvas cerradas: {len(crack_contours(m))}")
+    print(f"\nDSS segments: {dss_nsegments(m)}   "
+          f"crack vertices: {sum(len(l) - 1 for l in crack_contours(m))}   "
+          f"closed curves: {len(crack_contours(m))}")
 
     # The reference does NOT depend on px_per_cm (it comes from the intrinsic
     # grid), so this column measures real convergence and not a moving target.
     print("\n### Leaf at several resolutions (fixed reference "
           f"{ref:.4f} cm)\n")
-    print("| px/cm | imagen (px) | DSS (cm) | err % | MS bin (cm) | err % | "
+    print("| px/cm | image (px) | DSS (cm) | err % | MS bin (cm) | err % | "
           "Crofton-4 (cm) | err % |")
     print("|---:|---|---:|---:|---:|---:|---:|---:|")
     for ppc in (2.0, 4.0, 8.0, 16.0, 32.0, 64.0):

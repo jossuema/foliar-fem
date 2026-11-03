@@ -1,29 +1,29 @@
 % ---------------------------------------------------------------------------
 % LXAI @ NeurIPS 2026 -- LatinX in AI Research Workshop
-% Categoria: FULL PAPER (hasta 8 paginas sin contar referencias).
+% Category: FULL PAPER (up to 8 pages excluding references).
 %
-% VERSION CAMERA-READY, aceptada. Ya NO es doble ciego: lleva 'final' en las
-% opciones del estilo y el bloque \author de abajo. Para volver a una version
-% anonima (por ejemplo para otro envio en revision) se quita 'final' y el
-% estilo oculta solo los autores y el entorno 'ack'.
+% CAMERA-READY VERSION, accepted. No longer double blind: it carries 'final' in
+% the style options and the \author block below. To go back to an anonymous
+% version (for another submission under review, say) drop 'final' and the style
+% hides the authors and the 'ack' environment on its own.
 %
-% neurips_2025.sty es el estilo oficial mas reciente de NeurIPS; el de 2026 aun
-% no se publica (el enlace del CFP apunta a una pagina de 2015 sin actualizar).
+% neurips_2025.sty is the most recent official NeurIPS style; the 2026 one is
+% not out yet (the CFP link points at a 2015 page that was never updated).
 %
-% Los tres datos que faltaban ya estan puestos, dichos por los autores:
-%   1. Los emails, en el bloque \author de abajo.
-%   2. El entorno 'ack', justo antes de la bibliografia: no hubo
-%      financiamiento externo ni intereses en competencia.
-%   3. La URL del repositorio, en la nota al pie de Limitations.
+% The three items that were missing are now in place, as given by the authors:
+%   1. The emails, in the \author block below.
+%   2. The 'ack' environment, just before the bibliography: there was no
+%      external funding and there are no competing interests.
+%   3. The repository URL, in the Limitations footnote.
 % ---------------------------------------------------------------------------
 \documentclass{article}
 
 \usepackage[dblblindworkshop, final]{neurips_2025}
 \workshoptitle{LatinX in AI (LXAI) Research Workshop}
 
-% El .sty disponible es el de 2025 y el envio va a NeurIPS 2026, la 40a edicion.
-% Esto solo corrige el aviso al pie; si LXAI publica un neurips_2026.sty, se
-% reemplaza el paquete y se borran estas cuatro lineas.
+% The available .sty is the 2025 one and this goes to NeurIPS 2026, the 40th
+% edition. This only fixes the footer notice; if LXAI publishes a
+% neurips_2026.sty, swap the package in and delete these four lines.
 \makeatletter
 \renewcommand{\@neuripsordinal}{40th}
 \renewcommand{\@neuripsyear}{2026}
@@ -33,12 +33,12 @@
 \usepackage[T1]{fontenc}
 \usepackage{etoolbox}
 
-% El PDF de ejemplo oficial de NeurIPS trae typewriter VECTORIAL (SFTT1000, que
-% da cm-super) y matematica Computer Modern. Sin cm-super instalado, cmtt en T1
-% cae a mapas de bits Type 3 y se ve borroso al hacer zoom. Se sustituye SOLO la
-% familia monoespaciada por Latin Modern, que es vectorial y de la misma familia
-% de diseno. NO se carga lmodern entero: eso se llevaria puestos el cuerpo en
-% Times y la matematica en CM, que son los que fija el estilo de NeurIPS.
+% The official NeurIPS example PDF ships VECTOR typewriter (SFTT1000, which
+% cm-super provides) and Computer Modern maths. Without cm-super installed,
+% cmtt under T1 falls back to Type 3 bitmaps and goes blurry on zoom. ONLY the
+% monospaced family is substituted, by Latin Modern, which is vector and from
+% the same design family. lmodern is NOT loaded whole: that would take out the
+% Times body text and the CM maths, which are what the NeurIPS style fixes.
 \renewcommand{\ttdefault}{lmtt}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
@@ -46,8 +46,8 @@
 \usepackage{microtype}
 \usepackage{url}
 \usepackage{xcolor}
-% En la version camera-ready los metadatos del PDF SI se llenan: el chequeo de
-% anonimato exigia Title y Author vacios, y eso ya no corre.
+% In the camera-ready the PDF metadata IS filled in: the anonymity check
+% required an empty Title and Author, and that no longer applies.
 \usepackage[colorlinks=true,allcolors=blue!60!black,
             pdftitle={Your Ground Truth Is Running the Same Biased Estimator as Your Method:
                       Incorporation Bias in the Geometric Evaluation of Segmentation Pipelines},
@@ -57,26 +57,26 @@
 
 \newcommand{\pct}[1]{$#1\,\%$}
 
-% La lista de chequeo se numeraba como "Table" en su leyenda pero se citaba como
-% "Box" en el texto. Se le da su propio tipo de flotante y su propio contador.
+% The checklist was numbered as "Table" in its caption but cited as "Box" in
+% the text. It gets its own float type and its own counter.
 \usepackage{float}
 \newfloat{algbox}{tbp}{lob}
 \floatname{algbox}{Box}
 
-% La lista de chequeo se numeraba como "Table" en la leyenda y se citaba como
-% "Box" en el texto. Se le da su propio tipo de flotante y su propio contador.
+% The checklist was numbered as "Table" in the caption and cited as "Box" in
+% the text. It gets its own float type and its own counter.
 
 
-% La tabla de auditoria desbordaba el margen 13.3pt. Se aprieta la separacion
-% de columnas solo dentro de los entornos table, sin tocar la geometria ni el
-% cuerpo del texto (achicar el texto para hacer entrar contenido es una
-% violacion de formato que los chairs revisan).
+% The audit table overflowed the margin by 13.3pt. Column separation is
+% tightened inside table environments only, without touching the geometry or
+% the body text (shrinking text to fit content in is a formatting violation
+% that the chairs do check).
 \AtBeginEnvironment{table}{\setlength{\tabcolsep}{4.5pt}}
 
-% Este paper es deliberadamente visual: 3 figuras y 4 tablas en 8 paginas. Los
-% limites por defecto de LaTeX (2 flotantes arriba, 3 por pagina, 20 % de texto
-% minimo) empujan flotantes al final y desperdician media pagina. Se relajan.
-% Esto NO achica texto ni toca margenes: solo cambia donde puede ir un flotante.
+% This paper is deliberately visual: 3 figures and 4 tables in 8 pages. The
+% LaTeX defaults (2 floats at the top, 3 per page, 20 % minimum text) push
+% floats to the end and waste half a page, so they are relaxed. This does NOT
+% shrink text or touch margins: it only changes where a float may go.
 \setcounter{topnumber}{3}
 \setcounter{bottomnumber}{2}
 \setcounter{totalnumber}{4}
@@ -89,10 +89,8 @@
 \title{Your Ground Truth Is Running the Same Biased Estimator as Your Method:\\
        Incorporation Bias in the Geometric Evaluation of Segmentation Pipelines}
 
-% El nombre va como lo escribio el autor. Si lleva tilde --"Josue" -> "Josue"
-% con acento-- cambiarlo aqui: inputenc utf8 ya esta cargado.
-% El email NO esta puesto porque no se puede inventar uno: descomentar la linea
-% \texttt{...} de cada autor y completarla con la direccion institucional.
+% Names are spelled as the authors write them; inputenc utf8 is already loaded,
+% so an accent can go in directly. Both institutional emails are filled in.
 \author{%
   Manuel Josue Malla Campoverde \\
   Universidad T\'ecnica de Machala \\
@@ -623,10 +621,10 @@ We set out to build a geometric phenotyping pipeline and found instead that our 
 lying to us, past exact synthetic ground truth, a refinement study and a strong baseline. When a
 pipeline turns a mask into a number with units, the estimator belongs in the threat model.
 
-% Declaracion que NeurIPS exige en el paper final. Dicha por los autores: no
-% hubo financiamiento externo. El entorno 'ack' se oculta solo si se quita
-% 'final' de las opciones del estilo, asi que no hay que tocarlo para volver
-% a una version anonima.
+% The declaration NeurIPS requires in the final paper. As stated by the
+% authors: there was no external funding. The 'ack' environment hides itself
+% when 'final' is dropped from the style options, so it needs no edit to go
+% back to an anonymous version.
 \begin{ack}
 This work received no external funding. The authors declare no competing interests.
 \end{ack}

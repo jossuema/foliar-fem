@@ -1,12 +1,12 @@
-# Dependencias con cota superior de version mayor.
+# Dependencies with an upper bound on the major version.
 #
-# El proyecto es determinista dentro de un entorno dado: dos corridas con las
-# mismas versiones dan salida identica bit a bit. Pero las cifras de referencia
-# SI se mueven entre versiones de las librerias geometricas -- un conjunto
-# distinto daba 20 989 triangulos en vez de 20 917, y con la malla cambia todo
-# lo que se mide sobre ella.
+# The project is deterministic within a given environment: two runs on the same
+# versions give bit-identical output. The reference figures DO move between
+# versions of the geometry libraries, though -- a different set gave 20 989
+# triangles instead of 20 917, and once the mesh changes so does everything
+# measured on it.
 #
-# Para reproducir las cifras publicadas usa requirements-lock.txt.
+# To reproduce the published figures use requirements-lock.txt.
 numpy>=1.24,<3
 scipy>=1.10,<2
 scikit-image>=0.20,<0.26

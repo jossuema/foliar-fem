@@ -1,14 +1,14 @@
 name: validate
 
-# La red de seguridad del proyecto. validate.py prueba PROPIEDADES MATEMATICAS
-# contra soluciones exactas, no valores memorizados, asi que un cambio correcto
-# no deberia moverlo y uno incorrecto lo pone en rojo.
+# The project's safety net. validate.py tests MATHEMATICAL PROPERTIES against
+# exact solutions rather than memorised values, so a correct change should not
+# move it and an incorrect one turns it red.
 #
-# Se corre en dos entornos a proposito:
-#   - lock  : las versiones exactas con las que se produjeron las cifras publicadas
-#   - suelto: las versiones mas nuevas que admite requirements.txt
-# El segundo puede fallar sin que el codigo este mal: significa que una libreria
-# cambio y hay que revisar las cifras de referencia. Por eso no bloquea.
+# It runs in two environments on purpose:
+#   - pinned : the exact versions the published figures were produced with
+#   - latest : the newest versions requirements.txt admits
+# The second one can fail without the code being wrong: it means a library
+# changed and the reference figures need review. That is why it does not block.
 
 on:
   push:
@@ -17,8 +17,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  lock:
-    name: versiones fijadas (bloqueante)
+  pinned:
+    name: pinned versions (blocking)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,15 +26,15 @@ jobs:
         with:
           python-version: "3.10"
           cache: pip
-      - name: Instalar dependencias
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-lock.txt
-      - name: Validacion numerica
+      - name: Numerical validation
         run: python validate.py
 
-  suelto:
-    name: versiones al dia (informativo)
+  latest:
+    name: latest versions (informational)
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
@@ -47,9 +47,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - name: Instalar dependencias
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Validacion numerica
+      - name: Numerical validation
         run: python validate.py

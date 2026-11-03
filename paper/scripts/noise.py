@@ -86,12 +86,12 @@ from foliar import synth, meshing  # noqa: E402
 # --------------------------------------------------------------------------
 # Published references (seed 7, 4 px/cm). Regenerable with leafperim.py
 # --------------------------------------------------------------------------
-P_TRUE_PRJ = 686.9815602950247      # nivel cero + Richardson, proyectado
-P_TRUE_INT = 744.2254917143233      # nivel cero + Richardson, intrinseco
+P_TRUE_PRJ = 686.9815602950247      # zero level set + Richardson, projected
+P_TRUE_INT = 744.2254917143233      # zero level set + Richardson, intrinsic
 P_REF = -0.076917                   # p = P_TRUE_PRJ / P_TRUE_INT - 1
 
 H_REF = 0.025                       # grid step of the reference polygon
-PPC = 4.0                           # px/cm de la imagen
+PPC = 4.0                           # px/cm of the image
 
 
 # --------------------------------------------------------------------------
@@ -177,7 +177,7 @@ def rasterize(g, origin_cm, ppc, shape):
 
 
 # --------------------------------------------------------------------------
-# 2 - perturbaciones en el dominio CONTINUO
+# 2 - perturbations in the CONTINUOUS domain
 # --------------------------------------------------------------------------
 def morpho(g, r_cm, kind):
     """Minkowski with a disc of radius r_cm on the continuous object."""
@@ -213,7 +213,7 @@ def _band_limited(s, L, sigma, ell, rng, oversample=8):
     M = int(min(max(M, 1024), 1 << 20))
     k = np.fft.rfftfreq(M, d=1.0 / M)                 # 0..M/2
     P = np.exp(-0.5 * (2 * math.pi * k * ell / L) ** 2)
-    P[0] = 0.0                                        # media nula
+    P[0] = 0.0                                        # zero mean
     c = (rng.normal(size=k.size) + 1j * rng.normal(size=k.size)) * np.sqrt(P)
     d_uni = np.fft.irfft(c, n=M)
     sd = float(d_uni.std())
@@ -233,7 +233,7 @@ def jitter(g, sigma_cm, ell_cm, seed):
         new_rings = []
         for r in [np.asarray(p.exterior.coords)] + \
                  [np.asarray(hl.coords) for hl in p.interiors]:
-            xy = r[:-1]                                     # sin el punto repetido
+            xy = r[:-1]                                     # without the repeated point
             n = len(xy)
             seg = np.hypot(*np.diff(np.vstack([xy, xy[:1]]), axis=0).T)
             s = np.concatenate([[0.0], np.cumsum(seg)[:-1]])
@@ -248,7 +248,7 @@ def jitter(g, sigma_cm, ell_cm, seed):
             new_rings.append(np.vstack([q, q[:1]]))
         q = Polygon(new_rings[0], new_rings[1:])
         if not q.is_valid:
-            q = q.buffer(0)                                  # deshace los lazos
+            q = q.buffer(0)                                  # undoes the self-intersections
         out.append(q)
     res = unary_union(out)
     if res.geom_type not in ("Polygon", "MultiPolygon"):
@@ -286,7 +286,7 @@ def clean(mask, min_px=16):
 
 
 # --------------------------------------------------------------------------
-# 4 - estimadores
+# 4 - estimators
 # --------------------------------------------------------------------------
 def est_A(mask, ppc):
     """Level A: 4-direction Crofton (baseline.py)."""
@@ -376,7 +376,7 @@ def inverted(bA, bB, b_wins_in_E):
 
 
 # --------------------------------------------------------------------------
-# 6 - infraestructura
+# 6 - infrastructure
 # --------------------------------------------------------------------------
 class Bench:
     def __init__(self):
@@ -404,14 +404,14 @@ class Bench:
               % (H_REF, sum(len(r) for r in rings_of(self.g0)), len(rings_of(self.g0))))
         print("  L0 projected   = %10.4f cm   (%+.4f %% against 686.9816 -> polygonisation offset)"
               % (self.L0, 100 * (self.L0 / P_TRUE_PRJ - 1)))
-        print("  L0 intrinseco  = %10.4f cm   (%+.4f %% contra 744.2255)"
+        print("  L0 intrinsic   = %10.4f cm   (%+.4f %% against 744.2255)"
               % (self.L0i, 100 * (self.L0i / P_TRUE_INT - 1)))
         print("  p of the polygon = %+.4f %%   (against %+.4f %% analytic)"
               % (100 * (self.L0 / self.L0i - 1), 100 * P_REF))
-        print("  rasterizado a %g px/cm contra sample.mask_blade: %d pixeles de %d distintos"
+        print("  rasterised at %g px/cm against sample.mask_blade: %d of %d pixels differ"
               % (self.ppc, nd, m0.size))
         pA, pB = est_A(m0, self.ppc), est_B(m0, self.org, self.ppc)
-        print("  b_A = %+.4f %%   b_B = %+.4f %%   (publicados: -1.3219 / +3.8653)"
+        print("  b_A = %+.4f %%   b_B = %+.4f %%   (published: -1.3219 / +3.8653)"
               % (100 * (pA / P_TRUE_PRJ - 1), 100 * (pB / P_TRUE_PRJ - 1)))
         print("  setup %.1f s" % self.t_setup)
         print()
@@ -428,7 +428,7 @@ ROWFMT = ("%-28s %8.2f | %8.3f %7.3f %7.3f %7.3f %-3s %-3s %-4s | "
           "%7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %-3s %-3s %-4s")
 HDR = ("%-28s %8s | %8s %7s %7s %7s %-3s %-3s %-4s | "
        "%7s %7s %7s %7s %7s %7s %-3s %-3s %-4s"
-       % ("perturbacion", "L_prj",
+       % ("perturbation", "L_prj",
           "b_A", "b_B", "p*", "marg", "prd", "obs", "ok",
           "b_A", "b_B", "b_MS", "b_DSS", "p*", "marg", "prd", "obs", "ok"))
 
@@ -470,7 +470,7 @@ def emit(label, Lp, Li, pA, pB, pMS, pDSS, refP_fix, refI_fix, p_fix,
 
 
 # --------------------------------------------------------------------------
-# 7 - familia continua
+# 7 - continuous family
 # --------------------------------------------------------------------------
 def cont(bench, quick=False):
     print("=" * 100)
@@ -493,7 +493,7 @@ def cont(bench, quick=False):
     print("-" * len(HDR))
 
     px = 1.0 / bench.ppc
-    cases = [("sin perturbar", bench.g0)]
+    cases = [("unperturbed", bench.g0)]
     for r in (1, 2):
         for k in ("dilate", "erode", "open", "close"):
             cases.append(("%s %d px (%.2f cm)" % (k, r, r * px),
@@ -510,7 +510,7 @@ def cont(bench, quick=False):
     rows = []
     for label, g in cases:
         if g.is_empty:
-            print("%-26s  VACIO" % label)
+            print("%-26s  EMPTY" % label)
             continue
         Lp = float(g.length)
         Li = intrinsic_length(g, bench.R)
@@ -519,12 +519,12 @@ def cont(bench, quick=False):
         rows.append(emit(label, Lp, Li, d["A"], d["B"], d["MS"], d["DSS"],
                          P_TRUE_PRJ, P_TRUE_INT, P_REF,
                          Lp, Li, Lp / Li - 1.0))
-    summarize(rows, "familia continua")
+    summarize(rows, "continuous family")
     return rows
 
 
 # --------------------------------------------------------------------------
-# 8 - familia raster
+# 8 - raster family
 # --------------------------------------------------------------------------
 def raster(bench, quick=False):
     print()
@@ -546,7 +546,7 @@ def raster(bench, quick=False):
         for sd in seeds:
             sp = salt_pepper(m0, q, sd)
             cases.append(("s&p q=%.3f raw #%d" % (q, sd), sp))
-            cases.append(("s&p q=%.3f limpio #%d" % (q, sd), clean(sp)))
+            cases.append(("s&p q=%.3f clean #%d" % (q, sd), clean(sp)))
     rows = []
     for label, m in cases:
         d = bench.measure(m, with_dss=True)
@@ -554,7 +554,7 @@ def raster(bench, quick=False):
                          d["MS"], d["DSS"],
                          P_TRUE_PRJ, P_TRUE_INT, P_REF,
                          P_TRUE_PRJ, P_TRUE_INT, P_REF))
-    summarize(rows, "familia raster (solo lectura (i))", only_fixed=True)
+    summarize(rows, "raster family (reading (i) only)", only_fixed=True)
     return rows
 
 
@@ -563,7 +563,7 @@ KULPA = 4.0 / math.pi * (2.0 * math.sqrt(2.0) - 2.0)     # 1.05478618
 
 def summarize(rows, name, only_fixed=False):
     print()
-    print("  --- resumen: %s (n = %d) ---" % (name, len(rows)))
+    print("  --- summary: %s (n = %d) ---" % (name, len(rows)))
     for tag, ka, kb, kp, kq in (("i", "bA1", "bB1", "ps1", "p1"),
                                 ("ii", "bA2", "bB2", "ps2", "p2")):
         if only_fixed and tag == "ii":
@@ -577,27 +577,27 @@ def summarize(rows, name, only_fixed=False):
         bad = sum(1 for r in rows if r["pred" + j] != r["obs" + j])
         badg = sum(1 for r in rows if r["gen" + j] != r["obs" + j])
         nprem = sum(1 for r in rows if not r["prem" + j])
-        print("   lectura (%-2s)  b_A [%+7.3f, %+7.3f] %%   b_B [%+7.3f, %+7.3f] %%   "
+        print("   reading (%-2s)  b_A [%+7.3f, %+7.3f] %%   b_B [%+7.3f, %+7.3f] %%   "
               "b_B - b_A [%.3f, %.3f] pp" % (tag, a.min(), a.max(), b.min(), b.max(),
                                              (b - a).min(), (b - a).max()))
-        print("                p* [%+7.3f, %+7.3f] %%   margen p*-p  min %+.3f  "
-              "mediana %+.3f  max %+.3f pp"
+        print("                p* [%+7.3f, %+7.3f] %%   margin p*-p  min %+.3f  "
+              "median %+.3f  max %+.3f pp"
               % (s.min(), s.max(), mar.min(), float(np.median(mar)), mar.max()))
         # equivalent and more readable form: with p fixed, the inversion holds iff
         # bbar < bbar* = -p/(1+p).  A single number as the threshold.
         bb = 0.5 * (a + b)
         pv = np.array([r[kq] for r in rows]) * 100
         bbstar = -pv / (1.0 + pv / 100.0)
-        print("                bbar [%+7.3f, %+7.3f] %%   umbral bbar* = -p/(1+p) = "
-              "[%+.3f, %+.3f] %%   holgura min %.3f pp"
+        print("                bbar [%+7.3f, %+7.3f] %%   threshold bbar* = -p/(1+p) = "
+              "[%+.3f, %+.3f] %%   slack min %.3f pp"
               % (bb.min(), bb.max(), bbstar.min(), bbstar.max(),
                  float((bbstar - bb).min())))
         ginv = sum(1 for r in rows if r["inv" + j])
-        print("                B gana en |E| en %d de %d;  "
+        print("                B wins in |E| in %d of %d;  "
               "published Eq. (2) fails in %d;  GENERAL form fails in %d (must be 0)"
               % (inv, len(rows), bad, badg))
         print("                GENUINE INVERSION (the order in |E| differs from the order in |b|)"
-              " en %d de %d" % (ginv, len(rows)))
+              " in %d of %d" % (ginv, len(rows)))
         if ginv < len(rows):
             faltan = [r["label"] for r in rows if not r["inv" + j]]
             print("                no inversion because |b_A| > |b_B| already before projecting:")
@@ -633,8 +633,8 @@ def critical(bench, seeds=(101, 202, 303, 404, 505)):
     """
     print()
     print("=" * 100)
-    print("AMPLITUD CRITICA DE JITTER  (lectura (i), p fijo = -7.6917 %,"
-          " umbral bbar* = +8.3330 %)")
+    print("CRITICAL JITTER AMPLITUDE  (reading (i), p fixed = -7.6917 %,"
+          " threshold bbar* = +8.3330 %)")
     print("=" * 100)
     print("  bbar = (b_A + b_B)/2 against the FIXED reference. While bbar < bbar*")
     print("  the inversion is observed; once it crosses, segmentation error dominates")
@@ -645,7 +645,7 @@ def critical(bench, seeds=(101, 202, 303, 404, 505)):
     bstar = 100 * (-P_REF / (1.0 + P_REF))
     sig = (0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.25, 1.5)
     for ell in (0.5, 1.0, 2.0):
-        print("  longitud de correlacion l = %.1f cm  (%.0f px)" % (ell, ell * bench.ppc))
+        print("  correlation length l = %.1f cm  (%.0f px)" % (ell, ell * bench.ppc))
         print("   %8s %16s %16s %16s %8s"
               % ("sigma px", "b_A %", "b_B %", "bbar %", "inv?"))
         prev = None
@@ -667,7 +667,7 @@ def critical(bench, seeds=(101, 202, 303, 404, 505)):
             if prev is not None and (prev[1] < bstar) != inv:
                 s0, m0 = prev
                 sc = s0 + (bstar - m0) * (sg - s0) / (m_.mean() - m0)
-                print("   %8s  <-- cruce por bbar* en sigma ~ %.3f px (%.4f cm)"
+                print("   %8s  <-- bbar* crossing at sigma ~ %.3f px (%.4f cm)"
                       % ("", sc, sc * px))
             prev = (sg, m_.mean())
         print()
@@ -711,8 +711,8 @@ def seeds_check(seed_list=(7, 8, 9, 10, 11)):
     print("  Each leaf carries its own reference polygon and its own p.")
     print()
     print("%6s %-22s %9s %9s %9s %8s %8s %7s %6s"
-          % ("hoja", "perturbacion", "b_A %", "b_B %", "bbar %", "p %", "bbar* %",
-             "B gana", "inv?"))
+          % ("leaf", "perturbation", "b_A %", "b_B %", "bbar %", "p %", "bbar* %",
+             "B wins", "inv?"))
     n_inv = n_tot = 0
     for sd in seed_list:
         cfg = synth.LeafConfig(seed=sd)
@@ -720,7 +720,7 @@ def seeds_check(seed_list=(7, 8, 9, 10, 11)):
         smp = synth.generate(cfg)
         g0 = ref_polygon(leaf, cfg)
         px = 1.0 / smp.px_per_cm
-        for lab, g in (("sin perturbar", g0),
+        for lab, g in (("unperturbed", g0),
                        ("dilate 1 px", morpho(g0, px, "dilate")),
                        ("jitter s=.5px l=1cm", jitter(g0, 0.5 * px, 1.0, 101))):
             Lp = float(g.length)
@@ -760,7 +760,7 @@ def iid_demo(bench):
     print("  length would converge; with iid noise it diverges as 1/sqrt(spacing).")
     print()
     print("%-10s %10s %12s %12s %12s %12s"
-          % ("h (cm)", "vertices", "L0 (cm)", "iid s=0.5px", "razon", "correl l=1cm"))
+          % ("h (cm)", "vertices", "L0 (cm)", "iid s=0.5px", "ratio", "correl l=1cm"))
     px = 1.0 / bench.ppc
     for h in (0.100, 0.050, 0.025):
         g = ref_polygon(bench.leaf, bench.cfg, h)
@@ -794,13 +794,13 @@ def meshcheck(bench):
     print("=" * 100)
     px = 1.0 / bench.ppc
     m0 = bench.sample.mask_blade
-    tests = [("sin perturbar", bench.g0),
+    tests = [("unperturbed", bench.g0),
              ("dilate 1 px", morpho(bench.g0, px, "dilate")),
              ("jitter s=2px l=0.5cm", jitter(bench.g0, 2.0 * px, 0.5, 101)),
              ("jitter s=0.5px l=1cm", jitter(bench.g0, 0.5 * px, 1.0, 101)),
              # the two worst for the mesher: salt and pepper. They do not hang
              # because mask_to_polygon already discards specks under 2 px2.
-             ("s&p q=0.005 limpio", clean(salt_pepper(m0, 0.005, 101))),
+             ("s&p q=0.005 clean", clean(salt_pepper(m0, 0.005, 101))),
              ("s&p q=0.005 raw", salt_pepper(m0, 0.005, 101))]
     for label, g in tests:
         m = g if isinstance(g, np.ndarray) else \

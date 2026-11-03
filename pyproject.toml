@@ -5,13 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "foliar-fem"
 version = "0.2.0"
-description = "De mascaras de segmentacion 2D a parametros agronomicos y simulacion del frente de infeccion, via triangulacion de Delaunay restringida y elementos finitos P1"
+description = "From 2D segmentation masks to agronomic parameters and infection-front simulation, via constrained Delaunay triangulation and P1 finite elements"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [{ name = "Jossue Marcillo" }]
-keywords = ["fitopatologia", "sigatoka", "banano", "elementos-finitos",
-            "geodesicas", "mallado", "reaccion-difusion", "agricultura-de-precision"]
+keywords = ["plant-pathology", "black-sigatoka", "banana", "finite-elements",
+            "geodesic-distances", "meshing", "reaction-diffusion",
+            "precision-agriculture"]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
@@ -19,7 +20,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Topic :: Scientific/Engineering :: Image Processing",
   "Topic :: Scientific/Engineering :: Mathematics",
-  "Natural Language :: Spanish",
+  "Natural Language :: English",
 ]
 dependencies = [
   "numpy>=1.24,<3",

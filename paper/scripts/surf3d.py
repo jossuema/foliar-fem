@@ -63,8 +63,8 @@ import numpy as np
 from scipy.special import ellipkinc, ellipeinc
 from skimage import measure
 
-HALF = 1.6           # semilado del dominio [-1.6, 1.6]^3, igual que en 2D
-BLOCK = None         # capas por bloque; None = elegir para acotar la memoria
+HALF = 1.6           # half-side of the domain [-1.6, 1.6]^3, same as in 2D
+BLOCK = None         # layers per block; None = pick one to bound memory
 
 
 def auto_block(n, target=3e7):
@@ -111,7 +111,7 @@ def ellipsoid_area_quad(a, b, c, nq=400):
 
 
 # ==========================================================================
-# 2. Campos con signo
+# 2. Signed fields
 # ==========================================================================
 
 def rot_matrix(axis, deg):
@@ -267,7 +267,7 @@ def halfspace_ratio(u, L=64, seed=0, nrep=3):
     rng = np.random.default_rng(seed)
     x = np.arange(L + 1, dtype=float)
     y = np.arange(L + 1, dtype=float)
-    m = L // 6                                # margen de la ventana
+    m = L // 6                                # window margin
     vals = []
     for _ in range(nrep):
         d = float(rng.random()) * 1.0
@@ -311,11 +311,11 @@ def selftest():
     SL = ellipsoid_area_legendre(a, b, c)
     SQ = ellipsoid_area_quad(a, b, c)
     print("(a) ellipsoid 1.3x1.0x0.7")
-    print("    Legendre (F,E incompletas) : %.10f" % SL)
-    print("    cuadratura Gauss-Legendre  : %.10f" % SQ)
-    print("    diferencia relativa        : %.3e   %s"
-          % (abs(SL / SQ - 1), "OK" if abs(SL / SQ - 1) < 1e-10 else "FALLA"))
-    print("(b) Legendre contra cuadratura en otras formas, y limite esferico")
+    print("    Legendre (incomplete F,E)  : %.10f" % SL)
+    print("    Gauss-Legendre quadrature  : %.10f" % SQ)
+    print("    relative difference        : %.3e   %s"
+          % (abs(SL / SQ - 1), "OK" if abs(SL / SQ - 1) < 1e-10 else "FAIL"))
+    print("(b) Legendre against quadrature on other shapes, and the spherical limit")
     for tri in [(2.0, 1.0, 0.5), (1.0, 1.0, 0.5), (1.0, 0.6, 0.6),
                 (1.0, 1.0, 1.0 - 1e-9)]:
         L = ellipsoid_area_legendre(*tri)
@@ -323,7 +323,7 @@ def selftest():
         print("    %-22s Legendre %.10f  quad %.10f  rel %.2e"
               % (str(tri), L, Q, abs(L / Q - 1)))
     SS = ellipsoid_area_legendre(1.0, 1.0, 1.0 - 1e-9)
-    print("    limite esferico contra 4pi : %.10f vs %.10f  (%.2e)"
+    print("    spherical limit vs 4pi     : %.10f vs %.10f  (%.2e)"
           % (SS, 4 * np.pi, abs(SS / (4 * np.pi) - 1)))
 
     print("(c) block sum == whole volume (sphere, n=120)")
@@ -336,25 +336,25 @@ def selftest():
     # block, so it rounds differently. That is 4e-10 of noise against errors
     # of interest from 1e-4 upwards; the declared tolerance is 1e-8, not 1e-12.
     for k, tol in (("mcbin", 1e-12), ("mc0", 1e-8)):
-        print("    %-6s entero %.10f  bloques %.10f  dif %.2e  (tol %.0e) %s"
+        print("    %-6s whole %.10f  blocks %.10f  diff %.2e  (tol %.0e) %s"
               % (k, r_full[k], r_blk[k], abs(r_full[k] / r_blk[k] - 1), tol,
-                 "OK" if abs(r_full[k] / r_blk[k] - 1) < tol else "FALLA"))
+                 "OK" if abs(r_full[k] / r_blk[k] - 1) < tol else "FAIL"))
 
     print("(d) Crofton/faces in blocks == in one pass (sphere, n=120)")
     c_full = crofton_faces("sphere", 120, block=10 ** 6)
     c_blk = crofton_faces("sphere", 120, block=13)
     for k in ("crofton", "faces"):
-        print("    %-8s entero %.8f  bloques %.8f  dif %.2e  %s"
+        print("    %-8s whole %.8f  blocks %.8f  diff %.2e  %s"
               % (k, c_full[k], c_blk[k], abs(c_full[k] / c_blk[k] - 1),
-                 "OK" if abs(c_full[k] / c_blk[k] - 1) < 1e-12 else "FALLA"))
+                 "OK" if abs(c_full[k] / c_blk[k] - 1) < 1e-12 else "FAIL"))
 
     print("(e) half-space of normal (0,0,1): f must be exactly 1")
     f, s = halfspace_ratio((0, 0, 1), L=48, nrep=2)
     print("    f = %.6f  (sd %.1e)  %s" % (f, s, "OK" if abs(f - 1) < 1e-9
-                                           else "FALLA"))
+                                           else "FAIL"))
     print("(f) half-space of normal (1,1,0)/sqrt2 -> the 2D analogue at 45 deg")
     f, s = halfspace_ratio((1, 0, 1), L=48, nrep=2)
-    print("    f = %.6f  (2D a 45 deg predice 1.000000)" % f)
+    print("    f = %.6f  (2D at 45 deg predicts 1.000000)" % f)
     print("(g) axis-aligned cube, exact area 15.36")
     cf = crofton_faces("cube", 200, par=0.8)
     r = estimate_all("cube", 200, par=0.8)
@@ -370,7 +370,7 @@ def selftest():
 
 
 # ==========================================================================
-# experimentos
+# experiments
 # ==========================================================================
 
 def convergence(ns):
@@ -434,7 +434,7 @@ def orientation(n=400):
               (a, b, c), S_ELL, (1, 1, 1))]
     print("=" * 86)
     print("ORIENTATION SPREAD   n = %d" % n)
-    print("   definicion: max(err) - min(err) en pp, angulos 0..45 paso 5")
+    print("   definition: max(err) - min(err) in pp, angles 0..45 step 5")
     print("=" * 86)
     for name, kind, par, exact, axis in cases:
         eb, e0, ec = [], [], []
@@ -462,7 +462,7 @@ def orientation(n=400):
             th = np.deg2rad(np.array(ANGS))
             f2 = np.cos(th) + (np.sqrt(2) - 1) * np.sin(th)
             pred = (2.0 / 3.0) * 100 * (f2 - 1) + eb[0]
-            print("   prediccion desde el 2D, (2/3)*(f2(t)-1) + err(0):")
+            print("   prediction from the 2D case, (2/3)*(f2(t)-1) + err(0):")
             print("   %-10s %s" % ("pred", " ".join("%+.3f" % v
                                                     for v in pred)))
             print("   predicted spread %.4f pp against %.4f measured"
@@ -514,8 +514,8 @@ def kulpa3d(ndir=32000, L=40, seed=11):
     print("f(u) = binary-MC area / true area of a half-space of")
     print("normal u. In 2D the analogue is f2(t) = cos t + (sqrt2 - 1) sin t.")
     print()
-    named = [((0, 0, 1), "eje        (0,0,1)"),
-             ((1, 0, 1), "cara-diag  (1,0,1)/sqrt2"),
+    named = [((0, 0, 1), "axis       (0,0,1)"),
+             ((1, 0, 1), "face-diag  (1,0,1)/sqrt2"),
              ((1, 1, 1), "cube-diag  (1,1,1)/sqrt3"),
              ((1, 1, 2), "           (1,1,2)/sqrt6"),
              ((1, 1, 3), "           (1,1,3)/sqrt11"),
@@ -523,7 +523,7 @@ def kulpa3d(ndir=32000, L=40, seed=11):
              ((2, 3, 5), "           (2,3,5)/sqrt38")]
     for u, lab in named:
         f, s = halfspace_ratio(fold(u), L=64, nrep=4)
-        print("  %-28s f = %.5f   (sd entre fases %.1e)" % (lab, f, s))
+        print("  %-28s f = %.5f   (sd across phases %.1e)" % (lab, f, s))
     print("  The THREE symmetry directions give f = 1 exactly; the bias")
     print("  appears between them. It is the structure of f2 in 2D, which is 1")
     print("  at 0 and at 45 degrees and rises to 1.0824 at 22.5.")
@@ -535,13 +535,13 @@ def kulpa3d(ndir=32000, L=40, seed=11):
     v /= np.linalg.norm(v, axis=1, keepdims=True)
     fs = fbar(v, L=L, seed0=1000)
     m, se = fs.mean(), fs.std(ddof=1) / np.sqrt(ndir)
-    print("  media sobre %d direcciones uniformes en S^2 (L = %d):" % (ndir, L))
+    print("  mean over %d uniform directions on S^2 (L = %d):" % (ndir, L))
     print("     fbar_3D = %.6f +- %.6f    [min %.4f, max %.4f]"
           % (m, se, fs.min(), fs.max()))
     print("     -> predicted asymptotic bias for the SPHERE: %+.4f +- %.4f pp"
           % (100 * (m - 1), 100 * se))
     print()
-    print("  en 2D:  fbar_2D = (4/pi)(2 sqrt2 - 2) = %.6f  (+%.4f %%)"
+    print("  in 2D:  fbar_2D = (4/pi)(2 sqrt2 - 2) = %.6f  (+%.4f %%)"
           % ((4 / np.pi) * (2 * np.sqrt(2) - 2),
              100 * ((4 / np.pi) * (2 * np.sqrt(2) - 2) - 1)))
     print("  NO closed form is known for fbar_3D; the value above is")
@@ -606,7 +606,7 @@ def radiomics(ns=(200, 400, 800)):
               % (name, A_true, V_true, sph_true))
         print("  %6s %12s %10s %12s %10s %12s %10s"
               % ("n", "V voxel", "err %", "spher MC-bin", "err %",
-                 "esfer MC-0", "err %"))
+                 "spher MC-0", "err %"))
         for n in ns:
             g = np.linspace(-HALF, HALF, n)
             h = float(g[1] - g[0])
@@ -696,7 +696,7 @@ def convergent_on_mask(ns=(100, 200, 400), k=0.25):
     a, b, c = 1.3, 1.0, 0.7
     print("=" * 78)
     print("A CONVERGENT ESTIMATOR THAT DOES RUN ON THE BINARY MASK")
-    print("   invariante integral, r = %.2f h^(1/3)" % k)
+    print("   integral invariant, r = %.2f h^(1/3)" % k)
     print("=" * 78)
     for name, kind, par, exact in [
             ("sphere r=1", "sphere", None, sphere_area(1.0)),

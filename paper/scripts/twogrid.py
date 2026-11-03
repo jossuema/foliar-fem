@@ -169,13 +169,13 @@ axis-aligned square.
 
 
 # ==========================================================================
-# 2 - FORMAS Y MUESTREO
+# 2 - SHAPES AND SAMPLING
 # ==========================================================================
 
 @dataclass(frozen=True)
 class Sample:
     """What an estimator sees on one grid. `phi` is None if there is no field."""
-    mask: np.ndarray          # indicadora booleana (lo unico que trae una red)
+    mask: np.ndarray          # boolean indicator (all a network ever hands you)
     g: np.ndarray             # 1-D coordinate of the NODES (x axis); square grid
     h: float                  # spacing, isotropic
     phi: np.ndarray | None    # signed field, if the shape has one
@@ -197,7 +197,7 @@ _HALF = 1.6
 
 def _grid_shape(phi_fn):
     def sampler(n: int) -> Sample:
-        g = np.linspace(-_HALF, _HALF, n)          # NODOS, con extremos
+        g = np.linspace(-_HALF, _HALF, n)          # NODES, endpoints included
         XX, YY = np.meshgrid(g, g)
         phi = phi_fn(XX, YY)
         return Sample(phi > 0, g, float(g[1] - g[0]), phi)
@@ -246,7 +246,7 @@ def leaf_shape() -> Shape | None:
 
     cfg = synth.LeafConfig(n_tears=0, n_lesions=0)
     leaf = synth.SyntheticLeaf(cfg)
-    L, H, A = cfg.length_cm, cfg.halfwidth_cm, 0.42   # 0.42 = exponente de halfwidth()
+    L, H, A = cfg.length_cm, cfg.halfwidth_cm, 0.42   # 0.42 = exponent of halfwidth()
 
     def dW(u, side):
         s = np.clip(u / L, 1e-300, 1.0 - 1e-300)
@@ -282,7 +282,7 @@ LEAF_GRIDS = (584, 1167, 2333)   # h = 0.400, 0.200, 0.100 cm
 
 
 # ==========================================================================
-# 3 - ESTIMADORES
+# 3 - ESTIMATORS
 # ==========================================================================
 
 def est_marching_squares(s: Sample) -> float:
@@ -326,7 +326,7 @@ ESTIMATORS = [
     ("skimage.crofton(4)", est_crofton4, False),
     ("zero level set", est_levelset, True),
     ("DSS", est_dss, True),
-]  # (nombre, fn, se_espera_que_pase)
+]  # (name, fn, expected_to_pass)
 
 
 # ==========================================================================
@@ -357,7 +357,7 @@ def two_grid_check(est, shape: Shape, grids=None) -> dict:
     elif abs(ratio - 1.0) <= PLATEAU_BAND:
         verdict = "FAIL"         # plateau: the error did not move under 4x refinement
     else:
-        verdict = "INCONCL"      # serie no monotona; extender, ver PLATEAU_BAND
+        verdict = "INCONCL"      # non-monotone series; extend, see PLATEAU_BAND
     passes = verdict == "PASS"
 
     # diagnostic, NOT criterion: the self-convergence order, which is what one
@@ -442,13 +442,13 @@ def checklist():
     print("=" * 92)
     print("TWO-GRID CONVERGENCE TEST - minimal checklist")
     print("=" * 92)
-    print("umbrales:  ORDER_MIN = %.2f   TOL_FLOOR = %.1e   PLATEAU_BAND = %.2f"
-          "   grillas = %s" % (ORDER_MIN, TOL_FLOOR, PLATEAU_BAND, GRIDS))
+    print("thresholds:  ORDER_MIN = %.2f   TOL_FLOOR = %.1e   PLATEAU_BAND = %.2f"
+          "   grids = %s" % (ORDER_MIN, TOL_FLOOR, PLATEAU_BAND, GRIDS))
     print("verdict: PASS    order >= ORDER_MIN  OR  final |e| <= TOL_FLOOR")
     print("           FAIL    if not, and also |e3/e1 - 1| <= PLATEAU_BAND (plateau)")
     print("           INCONCL if not -> non-monotone series: extend, do not conclude")
     print("p_self = SELF-convergence order (no exact truth); it is"
-          " diagnostico, no criterio.")
+          " a diagnostic, not a criterion.")
     print()
 
     print("--- (1) canonical shape: square at %g degrees ---" % CANON_ANGLE)
@@ -466,7 +466,7 @@ def checklist():
         r3 = run_shape(lf, LEAF_GRIDS)
 
     print("=" * 92)
-    print("RESUMEN")
+    print("SUMMARY")
     print("=" * 92)
     ok = True
     for res in (r1, r2, r3):

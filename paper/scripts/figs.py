@@ -44,8 +44,9 @@ OUT = _FIGDIR if os.path.isdir(_FIGDIR) else _HERE
 # Style
 # ----------------------------------------------------------------------------
 # Single-column width for the NeurIPS style file is ~3.3 in; full width ~6.8 in.
-COL = 2.7   # ancho REAL de colocacion: minipage de 0.48*5.5in. Antes 3.3 -> se
-FULL = 5.5  # \textwidth de neurips_2025 es 5.5in, no 6.8. Antes se reducia 19%
+COL = 2.7   # REAL placement width: a 0.48*5.5in minipage. It used to be 3.3,
+FULL = 5.5  # and \textwidth in neurips_2025 is 5.5in, not 6.8, so figures were
+            # being scaled down by 19%.
 
 # neurips_2025.sty sets \textwidth = 5.5 in (single column).  Figures 5-7 are
 # built at the size they are placed at, so 8 pt type reaches the page as 8 pt:

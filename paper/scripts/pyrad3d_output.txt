@@ -1,10 +1,18 @@
-# PyRadiomics 3.0.1 sobre las mismas mascaras que surf3d.py
-# Cierra el hueco: la ruta de PyRadiomics ya no se MODELA con skimage, se MIDE.
-# Generado con scratchpad/venv_prad (pyradiomics 3.0.1, numpy 1.26.4, SimpleITK 2.5.6)
-# 2026-08-19T21:41:32Z
+# PyRadiomics 3.0.1 on the same masks as surf3d.py
+# Closes the gap: the PyRadiomics path is no longer MODELLED with skimage, it is
+# MEASURED.
+#
+# Captured 2026-08-19T21:41:32Z in a throwaway venv (pyradiomics 3.0.1,
+# numpy 1.26.4, SimpleITK 2.5.6), because PyRadiomics 3.0.1 requires numpy<2 and
+# cannot share the project environment. That venv is gone, so unlike the other
+# reference outputs in this directory this one was NOT re-run when the
+# repository was translated: the figures below are the original measurement and
+# only the surrounding text was put into English, taken verbatim from
+# pyrad3d.py's own print statements. To reproduce it, build the venv as the
+# module docstring describes and run `python3 pyrad3d.py`.
 
 ============================================================================================
-SPHERE   area exacta 12.5663706   volumen exacto 4.1887902   esfericidad exacta 1.0000000
+SPHERE   exact area 12.5663706   exact volume 4.1887902   exact sphericity 1.0000000
 ============================================================================================
      n         h |  SurfaceArea     err % |   MeshVolume    err % |  VoxelVolume    err % |  Sphericity    err %
 --------------------------------------------------------------------------------------------
@@ -13,7 +21,7 @@ SPHERE   area exacta 12.5663706   volumen exacto 4.1887902   esfericidad exacta 
    400  0.008020 |    13.674867   +8.8211 |     4.188987  +0.0047 |     4.189120  +0.0079 |    0.918968  -8.1032
 
 ============================================================================================
-ELLIPSOID   area exacta 12.4245489   volumen exacto 3.8117991   esfericidad exacta 0.9497810
+ELLIPSOID   exact area 12.4245489   exact volume 3.8117991   exact sphericity 0.9497810
 ============================================================================================
      n         h |  SurfaceArea     err % |   MeshVolume    err % |  VoxelVolume    err % |  Sphericity    err %
 --------------------------------------------------------------------------------------------
@@ -22,13 +30,13 @@ ELLIPSOID   area exacta 12.4245489   volumen exacto 3.8117991   esfericidad exac
    400  0.008020 |    13.525329   +8.8597 |     3.811621  -0.0047 |     3.811754  -0.0012 |    0.872454  -8.1415
 
 ============================================================================================
-CONTRASTE CON LA INFERENCIA POR skimage QUE EL PAPER TRAIA
+CONTRAST WITH THE skimage INFERENCE THE PAPER USED TO CARRY
 ============================================================================================
-  surf3d.py modelaba la ruta de PyRadiomics con skimage.measure.marching_cubes
-  sobre la indicadora binaria al nivel 0.5, y reportaba:
-    esfera     +8.82 % (n=400)   esfericidad 0.918987  (-8.10 %)
-    elipsoide  +8.86 % (n=400)   esfericidad 0.872475  (-8.14 %)
-  Las filas de arriba son PyRadiomics de verdad. Si coinciden, la
-  inferencia era correcta y el paper puede citar PyRadiomics por su nombre.
+  surf3d.py modelled the PyRadiomics path with skimage.measure.marching_cubes
+  on the binary indicator at level 0.5, and reported:
+    sphere     +8.82 % (n=400)   sphericity 0.918987  (-8.10 %)
+    ellipsoid  +8.86 % (n=400)   sphericity 0.872475  (-8.14 %)
+  The rows above are PyRadiomics itself. If they agree, the inference
+  was correct and the paper can cite PyRadiomics by name.
 
   pyradiomics v3.0.1   numpy 1.26.4   SimpleITK 2.5.6

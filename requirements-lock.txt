@@ -1,9 +1,9 @@
-# Versiones EXACTAS con las que se produjeron las cifras de la documentacion.
+# The EXACT versions the documented figures were produced with.
 # Python 3.10.11.
 #
 #   python3 -m venv .venv && source .venv/bin/activate
 #   pip install -r requirements-lock.txt
-#   python validate.py        # 66 chequeos, deben terminar en verde
+#   python validate.py        # 66 checks, all of which must come out green
 numpy==2.2.6
 scipy==1.15.3
 scikit-image==0.25.2

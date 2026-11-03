@@ -118,7 +118,7 @@ effect that becomes rare under refinement: they do not change the limit.
 
 
 # --------------------------------------------------------------------------
-# contadores
+# counters
 # --------------------------------------------------------------------------
 def counts(mask: np.ndarray, pad: int = 1):
     """(N_h, N_v, N_d1, N_d2, S) with a zero background all around."""
@@ -235,7 +235,7 @@ def exhaustive_4x4() -> int:
     """All 2^16 configurations of a 4x4 window."""
     bad = 0
     n_tot = n_sad = 0
-    w_lema1 = w_lema2 = w_teo_sin = w_teo_con = 0.0
+    w_lemma1 = w_lemma2 = w_thm_without = w_thm_with = 0.0
     for bits in range(1 << 16):
         g = np.array([(bits >> i) & 1 for i in range(16)], bool).reshape(4, 4)
         if not g.any():
@@ -246,23 +246,23 @@ def exhaustive_4x4() -> int:
         _, _, _, _, n_s = counts(mm)
         cro = crofton4_measured(mm)
         ms = ms_measured(mm)
-        w_lema1 = max(w_lema1, abs(cro - crofton4_predicted(mm)))
-        w_lema2 = max(w_lema2, abs(ms - ms_predicted(mm)))
+        w_lemma1 = max(w_lemma1, abs(cro - crofton4_predicted(mm)))
+        w_lemma2 = max(w_lemma2, abs(ms - ms_predicted(mm)))
         res = abs(ms - (K_KULPA * cro + (2.0 - SQ2) * n_s))
-        w_teo_con = max(w_teo_con, res)
+        w_thm_with = max(w_thm_with, res)
         if n_s == 0:
-            w_teo_sin = max(w_teo_sin, abs(ms - K_KULPA * cro))
+            w_thm_without = max(w_thm_without, abs(ms - K_KULPA * cro))
         else:
             n_sad += 1
 
     tol = 1e-9
-    for name, w in (("Lemma 1  crofton_4 = (pi/8)[N_h+N_v+(N_d1+N_d2)/sqrt2]", w_lema1),
+    for name, w in (("Lemma 1  crofton_4 = (pi/8)[N_h+N_v+(N_d1+N_d2)/sqrt2]", w_lemma1),
                     ("Lemma 2  MS = (sqrt2-1)(N_h+N_v) + ((2-sqrt2)/2)(N_d1+N_d2)"
-                     " + (2-sqrt2) S", w_lema2),
+                     " + (2-sqrt2) S", w_lemma2),
                     (f"Theorem MS = {K_KULPA:.8f} * crofton_4  (saddle-free only)",
-                     w_teo_sin),
+                     w_thm_without),
                     (f"Theorem MS = {K_KULPA:.8f} * crofton_4 + (2-sqrt2) S"
-                     "  (ALL)", w_teo_con)):
+                     "  (ALL)", w_thm_with)):
         ok = w < tol
         bad += not ok
         print(f"  [{'OK ' if ok else 'BAD'}] {name}   max residual {w:.2e}")
