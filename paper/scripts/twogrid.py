@@ -380,7 +380,7 @@ def two_grid_check(est, shape: Shape, grids=None) -> dict:
 
 
 # ==========================================================================
-# 5 - INFORMES
+# 5 - REPORTS
 # ==========================================================================
 
 def _row(name, r):
@@ -421,7 +421,7 @@ def run_shape(shape: Shape, grids=None, ests=None) -> dict:
         try:
             r = two_grid_check(fn, shape, grids)
         except ValueError as exc:
-            print("  %-19s no aplicable (%s)" % (name, exc))
+            print("  %-19s not applicable (%s)" % (name, exc))
             continue
         known = (shape.name, name) in KNOWN_FALSE_PASS
         r["expected"] = expect or known
